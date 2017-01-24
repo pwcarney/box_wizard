@@ -4,41 +4,35 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public float speed;
+	public float maxSpeed;
 	public float jumpPower;
 
-	private float distToGround;
 	private Rigidbody2D rb2d;
+
+	public Transform groundCheck;
+	float groundRadius = 0.1f;
+	public LayerMask whatIsGround;
 
 	void Start()
 	{
-		distToGround = GetComponent<BoxCollider2D> ().bounds.extents.y;
-
 		rb2d = GetComponent<Rigidbody2D> ();
+	}
+
+	void Update()
+	{
+		if (IsGrounded() && Input.GetButtonDown("Jump")) 
+		{
+			rb2d.AddForce (new Vector2 (0f, jumpPower));
+		}
 	}
 
 	void FixedUpdate()
 	{
-		float moveHorizontal = Input.GetAxisRaw ("Horizontal");
-
-		Vector2 movement = new Vector2 (moveHorizontal, 0f);
-		movement.Normalize ();
-		movement = movement * speed * Time.deltaTime;
-
-		rb2d.AddForce (movement);
-
-		if (IsGrounded() && Input.GetAxisRaw ("Vertical") != 0) 
-		{
-			Debug.Log ("Jump!");
-
-			Vector2 jump = new Vector2 (0f, 1f);
-			jump = jump * jumpPower;
-			rb2d.AddForce (jump);
-		}
+		rb2d.velocity = new Vector2(Input.GetAxisRaw ("Horizontal") * maxSpeed, rb2d.velocity.y);
 	}
 		
 	bool IsGrounded()
 	{
-		return Physics2D.Raycast((Vector2)transform.position, -Vector2.up, distToGround + 0.1f);
+		return Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
 	}
 }
