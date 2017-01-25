@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
 	public Transform groundCheck;
 	float groundRadius = 0.1f;
 	public LayerMask whatIsGround;
+	public LayerMask whatIsBox;
 
 	public GameObject boxPrefab;
 
@@ -23,20 +24,30 @@ public class PlayerController : MonoBehaviour {
 
 	void Update()
 	{
-		if (Input.GetButtonDown("Box")) 
-		{
-			float boxSpawnOffset = 0f;
-			if (facingRight)
-				boxSpawnOffset = 1.7f;
-			else if (!facingRight)
-				boxSpawnOffset = -1.7f;
-				
-			GameObject box = Instantiate (boxPrefab, new Vector3 (transform.position.x + boxSpawnOffset, transform.position.y), Quaternion.identity);
-		}
-
 		if (IsGrounded() && Input.GetButtonDown("Jump")) 
 		{
 			rb2d.AddForce (new Vector2 (0f, jumpPower));
+		}
+
+		if (Input.GetButtonDown("Box")) 
+		{
+			Vector2 boxCheckLocation = new Vector2 (transform.position.x + BoxOffset (), transform.position.y);
+			Collider2D foundBox = Physics2D.OverlapCircle(boxCheckLocation, 1f, whatIsBox);
+			if (foundBox == null)
+				Instantiate (
+					boxPrefab, 
+					new Vector3 (
+						transform.position.x + BoxOffset(), 
+						transform.position.y - 0.1f), 
+					Quaternion.identity);
+		}
+
+		if (Input.GetButtonDown ("Delete")) 
+		{
+			Vector2 boxCheckLocation = new Vector2 (transform.position.x + BoxOffset (), transform.position.y);
+			Collider2D foundBox = Physics2D.OverlapCircle(boxCheckLocation, 1f, whatIsBox);
+			if (foundBox != null)
+				Destroy (foundBox.gameObject);
 		}
 	}
 
@@ -63,5 +74,15 @@ public class PlayerController : MonoBehaviour {
 		Vector3 myScale = transform.localScale;
 		myScale.x *= -1;
 		transform.localScale = myScale;
+	}
+
+	float BoxOffset()
+	{
+		float boxSpawnOffset = 0f;
+		if (facingRight)
+			boxSpawnOffset = 1.7f;
+		else if (!facingRight)
+			boxSpawnOffset = -1.7f;
+		return boxSpawnOffset;
 	}
 }
