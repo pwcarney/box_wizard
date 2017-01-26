@@ -28,6 +28,18 @@ public class PlayerController : MonoBehaviour {
 		{
 			rb2d.AddForce (new Vector2 (0f, jumpPower));
 		}
+			
+		if (Input.GetButtonDown ("Delete")) 
+		{
+			Vector2 boxCheckLocation = new Vector2 (transform.position.x + BoxOffset (), transform.position.y);
+			Collider2D foundBox = Physics2D.OverlapCircle(boxCheckLocation, 1f, whatIsBox);
+			if (foundBox != null) 
+			{
+				Destroy (foundBox.gameObject);
+				return;
+			}
+			
+		}
 
 		if (Input.GetButtonDown("Box")) 
 		{
@@ -40,14 +52,6 @@ public class PlayerController : MonoBehaviour {
 						transform.position.x + BoxOffset(), 
 						transform.position.y - 0.1f), 
 					Quaternion.identity);
-		}
-
-		if (Input.GetButtonDown ("Delete")) 
-		{
-			Vector2 boxCheckLocation = new Vector2 (transform.position.x + BoxOffset (), transform.position.y);
-			Collider2D foundBox = Physics2D.OverlapCircle(boxCheckLocation, 1f, whatIsBox);
-			if (foundBox != null)
-				Destroy (foundBox.gameObject);
 		}
 	}
 
